@@ -178,7 +178,7 @@ git clone https://github.com/themadinventor/esptool.git
 
 Hoặc Download từ [Dropbox](https://www.dropbox.com/s/u3sihwbmjmx7xl3/esptool.zip?dl=0) và giải nén vào thư mục `/tools/esp8266/`
 
-## Tải libc,libhal, file include (với ubuntu thêm lệnh sudo trước wget)
+## Tải libc,libhal, file include
 ```
 cd tools/esp8266/complier/crosstool-NG/builds/xtensa-lx106-elf/xtensa-lx106-elf/sysroot/usr
 wget -O lib/libc.a https://github.com/esp8266/esp8266-wiki/raw/master/libs/libc.a
@@ -186,6 +186,55 @@ wget -O lib/libhal.a https://github.com/esp8266/esp8266-wiki/raw/master/libs/lib
 wget -O include.tgz https://github.com/esp8266/esp8266-wiki/raw/master/include.tgz
 tar -xvzf include.tgz
 ```
+##   Cài đặt esp-open-sdk toolchain
+
+Hiện tại cộng đồng ESP đang chuyển qua dùng [esp-open-sdk](https://github.com/pfalcon/esp-open-sdk) bởi vì phiên bản này dễ dàng cài đặt và update cũng như nó sử dụng các tool của open source, đặc biệt là bao gồm cả the superior libc. Do vậy sau đây sẽ nói về việc cài đặt esp-open-sdk.
+
+
+### **Cài đặt**
+
+
+    
+    #Install needed dependencies
+    sudo apt-get -y install git autoconf build-essential
+    sudo apt-get -y install gperf bison flex texinfo libtool libncurses5-dev wget gawk libc6-dev python-serial libexpat-dev dpkg-dev unzip
+    
+    # Install the esp-open-sdk toolchain
+    cd /opt/Espresif/
+    sudo git clone https://github.com/pfalcon/esp-open-sdk.git
+    sudo chown -R $username esp-open-sdk
+    cd esp-open-sdk
+    make STANDALONE=y
+    echo 'PATH=$PATH:/opt/Espresif/esp-open-sdk/xtensa-lx106-elf/bin' >> ~/.profile
+    echo 'PATH=$PATH:/opt/Espresif/esp-open-sdk/esptool' >> ~/.profile
+    PATH=$PATH:/opt/Espresif/esp-open-sdk/xtensa-lx106-elf/bin
+    PATH=$PATH:/opt/Espresif/esp-open-sdk/esptool
+    
+    # Installing the ESP image tool
+    cd /opt/Espresif/esp-open-sdk
+    wget -O esptool_0.0.2-1_i386.deb https://github.com/esp8266/esp8266-wiki/raw/master/deb/esptool_0.0.2-1_i386.deb
+    sudo dpkg -i esptool_0.0.2-1_i386.deb
+    rm esptool_0.0.2-1_i386.deb
+
+
+Việc cài đặt có lẽ sẽ mất khoảng hơn 1 tiếng. Chú ý việc thay $username bằng user tương ứng.
+
+Nếu muốn thay đổi phiên bản cài đặt thì khi trước make cần thay đổi phiên bản trong Makefile (dòng 3). Xem thêm tại: http://www.esp8266.com/wiki/doku.php?id=toolchain
+
+
+### **Update**
+
+
+Việc update thực hiện đơn giản với vài dòng lệnh:
+
+    
+    cd /opt/Espressif/esp-open-sdk
+    make clean
+    git pull
+    git submodule update
+
+
+Ch̉̃ú  ý : không chạy make clean thì sẽ gây ra các lỗi khi build lại phiên bản.
 
 
 ## Công cụ COM Terminal
